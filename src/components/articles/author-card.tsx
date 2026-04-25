@@ -1,7 +1,10 @@
-import type { Author } from "@/types/article";
-
-export function AuthorCard({ author }: { author: Author }) {
-  const initials = author.name
+/**
+ * Compact byline shown at the foot of an article. The schema only exposes
+ * `authorName`; richer profiles will land alongside the future `profile`
+ * table.
+ */
+export function AuthorCard({ name }: { name: string }) {
+  const initials = name
     .split(" ")
     .map((part) => part[0])
     .slice(0, 2)
@@ -16,15 +19,10 @@ export function AuthorCard({ author }: { author: Author }) {
         {initials}
       </div>
       <div>
-        <p className="label-caps mb-1 text-primary">
-          {author.role ?? "Contributor"}
-        </p>
+        <p className="label-caps mb-1 text-primary">Author</p>
         <p className="font-serif text-2xl font-medium leading-tight text-foreground">
-          {author.name}
+          {name}
         </p>
-        {author.bio ? (
-          <p className="mt-3 text-muted-foreground">{author.bio}</p>
-        ) : null}
       </div>
     </div>
   );

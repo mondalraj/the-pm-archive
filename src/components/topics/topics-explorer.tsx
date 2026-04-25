@@ -8,13 +8,8 @@ import { cn } from "@/lib/utils";
 
 /**
  * Client-side topic explorer.
- *
- *   - Search box filters on title, subtitle, description, category, tags.
- *   - Tag pills narrow further; clicking an already-active tag clears it.
- *   - Results reflow with a smooth staggered reorder via AnimatePresence.
- *
- * All state is local; no URL sync (could be added later with
- * `nuqs` or `useSearchParams`).
+ *  - Search filters on title, description, newsletter name, author, tags.
+ *  - Tag pills narrow further; clicking the active tag clears it.
  */
 export function TopicsExplorer({
   articles,
@@ -30,14 +25,15 @@ export function TopicsExplorer({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return articles.filter((article) => {
-      if (activeTag && !(article.tags ?? []).includes(activeTag)) return false;
+      const tagNames = article.tags.map((t) => t.name);
+      if (activeTag && !tagNames.includes(activeTag)) return false;
       if (!q) return true;
       const haystack = [
         article.title,
-        article.subtitle ?? "",
         article.description,
-        article.category,
-        ...(article.tags ?? []),
+        article.sourceName,
+        article.authorName,
+        ...tagNames,
       ]
         .join(" ")
         .toLowerCase();
@@ -48,13 +44,9 @@ export function TopicsExplorer({
   return (
     <div>
       <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:gap-12">
-        {/* Sidebar filter */}
         <aside className="md:sticky md:top-24 md:self-start">
           <div className="mb-8">
-            <label
-              htmlFor="topics-search"
-              className="label-caps mb-3 block text-muted-foreground"
-            >
+            <label htmlFor="topics-search" className="label-caps mb-3 block text-muted-foreground">
               Search
             </label>
             <div className="relative">
@@ -83,11 +75,7 @@ export function TopicsExplorer({
           <div>
             <p className="label-caps mb-4 text-muted-foreground">Topics</p>
             <div className="flex flex-wrap gap-2">
-              <TagPill
-                label="All"
-                active={activeTag === null}
-                onClick={() => setActiveTag(null)}
-              />
+              <TagPill label="All" active={activeTag === null} onClick={() => setActiveTag(null)} />
               {tags.map((tag) => (
                 <TagPill
                   key={tag}
@@ -100,7 +88,6 @@ export function TopicsExplorer({
           </div>
         </aside>
 
-        {/* Results */}
         <div>
           <div className="mb-6 flex items-baseline justify-between gap-4 border-b border-border pb-4">
             <p className="label-caps text-muted-foreground">
@@ -125,10 +112,7 @@ export function TopicsExplorer({
               }}
             />
           ) : (
-            <motion.div
-              layout={!reduce}
-              className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2"
-            >
+            <motion.div layout={!reduce} className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2">
               <AnimatePresence mode="popLayout">
                 {filtered.map((article) =>
                   reduce ? (
@@ -184,9 +168,7 @@ function TagPill({
 function EmptyState({ onClear }: { onClear: () => void }) {
   return (
     <div className="flex flex-col items-start gap-4 border border-dashed border-border bg-surface/40 p-10">
-      <p className="font-serif text-2xl italic text-muted-foreground">
-        No matching articles.
-      </p>
+      <p className="font-serif text-2xl italic text-muted-foreground">No matching articles.</p>
       <p className="text-muted-foreground">
         Try a different keyword, or clear your filters to see the full archive.
       </p>

@@ -1,13 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { ArticleSummary } from "@/types/article";
 import { cn, formatDate } from "@/lib/utils";
-import { ArticleCover } from "@/components/ui/article-cover";
 
 /**
- * Standard editorial card: square cover, category, title, excerpt, meta.
- *
- * `compact` tightens vertical rhythm so two standard cards can stack next
- * to the featured card without overflowing its height.
+ * Standard editorial card.
  */
 export function StandardCard({
   article,
@@ -35,11 +32,15 @@ export function StandardCard({
             : "aspect-[4/3]",
         )}
       >
-        <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
-          <ArticleCover hueSeed={article.hueSeed} />
-        </div>
+        <Image
+          src={article.imageUrl}
+          alt={article.title}
+          fill
+          sizes={compact ? "160px" : "(min-width: 1024px) 360px, 100vw"}
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+        />
         <span className="label-caps absolute left-3 top-3 bg-background/80 px-2 py-1 text-primary backdrop-blur-sm">
-          {article.category}
+          {article.sourceName}
         </span>
       </div>
 
@@ -56,9 +57,9 @@ export function StandardCard({
           {article.description}
         </p>
         <div className="mt-auto flex items-center justify-between gap-3 pt-4 text-xs text-muted-foreground">
-          <span className="label-caps">{article.author.name}</span>
+          <span className="label-caps">{article.authorName}</span>
           <span>
-            {formatDate(article.publishedAt, "short")} · {article.readingTime}m
+            {formatDate(article.createdAt, "short")} · {article.timeToRead}m
           </span>
         </div>
       </div>

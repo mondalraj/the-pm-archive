@@ -1,0 +1,60 @@
+// Prisma schema for the-pm-archive.
+// Workflow: edit this file, then run `npx prisma db push` to apply the
+// schema directly to the production Supabase Postgres database. No
+// migration files are generated. See PLAN.md for the full rationale.
+//
+// Required Postgres extension: pg_trgm (already enabled on Supabase).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")  // pooled (Supavisor :6543) — runtime
+  directUrl = env("DIRECT_URL")    // direct (:5432) — `prisma db push`
+}
+
+model Tag {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articles Article[] @relation("ArticleTags")
+
+  // Trigram GIN index accelerates ILIKE '%term%' searches on tag names
+  // (e.g. autocomplete). B-tree from @unique already covers exact lookup.
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, name: "tag_name_trgm_idx")
+  @@map("tag")
+}
+
+model Article {
+  id              Int      @id @default(autoincrement())
+  slug            String   @unique
+  title           String
+  imageUrl        String   @map("image_url")
+  description     String
+  contentMarkdown String   @map("content_markdown")
+  // Source publication this article was summarised from
+  // (e.g. "Lenny's Newsletter"). Distinct from our own subscription CTA.
+  sourceName      String   @map("source_name")
+  authorName      String   @map("author_name")
+  originalUrl     String   @map("original_url")
+  timeToRead      Int      @map("time_to_read")
+  tags            Tag[]    @relation("ArticleTags")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Listing pages query "newest first"; this avoids a Sort node entirely.
+  @@index([createdAt(sort: Desc)], name: "article_created_at_desc_idx")
+
+  // Substring/fuzzy search on title via pg_trgm + GIN. Required because
+  // B-tree cannot accelerate `ILIKE '%term%'` patterns.
+  @@index([title(ops: raw("gin_trgm_ops"))], type: Gin, name: "article_title_trgm_idx")
+
+  // Common secondary filter: by author.
+  @@index([authorName], name: "article_author_name_idx")
+
+  @@map("article")
+}

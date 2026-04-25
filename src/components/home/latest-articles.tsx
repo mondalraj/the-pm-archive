@@ -6,15 +6,14 @@ import { StandardCard } from "@/components/home/standard-card";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 
 /**
- * The 2+1 editorial grid on the home page. Expects at least one article.
- * The most recent `featured` article (falling back to the first article)
- * renders in the large panel; the next two render stacked alongside it.
+ * The 2+1 editorial grid on the home page. Articles arrive sorted DESC
+ * by createdAt from the data layer; the most recent renders large.
  */
-export function LatestIssues({ articles }: { articles: ArticleSummary[] }) {
+export function LatestArticles({ articles }: { articles: ArticleSummary[] }) {
   if (articles.length === 0) return null;
 
-  const featured = articles.find((a) => a.featured) ?? articles[0];
-  const rest = articles.filter((a) => a.slug !== featured.slug).slice(0, 4);
+  const featured = articles[0];
+  const rest = articles.slice(1, 5);
 
   return (
     <section id="latest" className="py-20 md:py-28">
@@ -36,17 +35,7 @@ export function LatestIssues({ articles }: { articles: ArticleSummary[] }) {
               className="label-caps hidden items-center gap-2 border-b border-border pb-1 text-foreground transition-all hover:gap-3 hover:border-primary hover:text-primary md:inline-flex"
             >
               View Archive
-              <svg
-                viewBox="0 0 24 24"
-                width="14"
-                height="14"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden
-              >
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <path d="M5 12h14" />
                 <path d="M13 6l6 6-6 6" />
               </svg>

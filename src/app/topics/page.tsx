@@ -1,5 +1,5 @@
 import { buildMetadata } from "@/lib/seo";
-import { getAllArticles } from "@/lib/articles";
+import { getAllArticles, getAllTags } from "@/lib/articles";
 import { Container } from "@/components/ui/container";
 import { TopicsExplorer } from "@/components/topics/topics-explorer";
 import { Reveal } from "@/components/motion/reveal";
@@ -11,18 +11,13 @@ export const metadata = buildMetadata({
   path: "/topics",
 });
 
-/**
- * /topics — a client-filterable index of every article by tag and title.
- * The server gathers all articles + the unique tag set; the client
- * handles the interactive filter/search.
- */
 export default async function TopicsPage() {
-  const articles = await getAllArticles();
+  const [articles, tagRows] = await Promise.all([
+    getAllArticles(),
+    getAllTags(),
+  ]);
 
-  // Stable, sorted, case-insensitive unique tag list.
-  const tags = Array.from(
-    new Set(articles.flatMap((a) => a.tags ?? [])),
-  ).sort((a, b) => a.localeCompare(b));
+  const tags = tagRows.map((t) => t.name).sort((a, b) => a.localeCompare(b));
 
   return (
     <Container className="py-16 md:py-24">
@@ -33,8 +28,8 @@ export default async function TopicsPage() {
             Find articles by topic.
           </h1>
           <p className="mt-5 text-lg leading-relaxed text-muted-foreground md:text-xl">
-            Search for a keyword or pick a topic. The archive filters in
-            real time — no page reloads, no page numbers.
+            Search for a keyword or pick a topic. The archive filters in real
+            time — no page reloads, no page numbers.
           </p>
         </header>
       </Reveal>

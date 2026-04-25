@@ -1,40 +1,37 @@
 /**
- * Shape of an article/blog post. Kept intentionally minimal; extend as the
- * data source (MDX, CMS, DB) is chosen. Used by list, detail, SEO, sitemap.
+ * Domain types for articles.
+ *
+ * These mirror the `article` and `tag` tables (see prisma/schema.prisma)
+ * with one deliberate adaptation: `createdAt`/`updatedAt` are serialised as
+ * ISO strings before crossing the server -> client boundary so RSC payloads
+ * stay JSON-safe. The data-access layer in `src/lib/articles.ts` performs
+ * that conversion.
  */
-export type Author = {
+
+export type ArticleTag = {
+  id: number;
   name: string;
-  role?: string;
-  bio?: string;
-  /** Optional avatar URL; omit to render initials-on-gradient placeholder. */
-  avatar?: string;
 };
 
 export type Article = {
+  id: number;
   slug: string;
   title: string;
-  /** Optional italic editorial subtitle rendered below the main headline. */
-  subtitle?: string;
   description: string;
-  /** Editorial grouping shown as an uppercase label (e.g. "Strategy"). */
-  category: string;
-  /** ISO-8601 publish date, e.g. "2026-04-22". */
-  publishedAt: string;
-  author: Author;
+  imageUrl: string;
+  contentMarkdown: string;
+  /** Source publication this article was summarised from (e.g. "Lenny's Newsletter"). */
+  sourceName: string;
+  authorName: string;
+  originalUrl: string;
   /** Estimated reading time in minutes. */
-  readingTime: number;
-  tags?: string[];
-  /** Optional remote image URL. If absent, a gradient placeholder is shown. */
-  coverImage?: string;
-  /** Deterministic seed (0–360) used to vary gradient placeholders per card. */
-  hueSeed?: number;
-  /** Featured articles render large on the home grid. */
-  featured?: boolean;
-  /** Optional key takeaways rendered in a callout box on the article page. */
-  keyTakeaways?: string[];
-  /** Body content as HTML (trusted, authored in-repo for now). */
-  content: string;
+  timeToRead: number;
+  tags: ArticleTag[];
+  /** ISO-8601 timestamp. */
+  createdAt: string;
+  /** ISO-8601 timestamp. */
+  updatedAt: string;
 };
 
-/** Preview shape used on the home page and listing views. */
-export type ArticleSummary = Omit<Article, "content">;
+/** Preview shape used on listings — omits the heavy markdown body. */
+export type ArticleSummary = Omit<Article, "contentMarkdown">;
