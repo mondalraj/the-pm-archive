@@ -56,7 +56,7 @@ export function ArticlesList({
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
         <AnimatePresence initial={false}>
           {shown.map((article, index) =>
             reduce ? (
@@ -64,6 +64,7 @@ export function ArticlesList({
             ) : (
               <motion.div
                 key={article.slug}
+                className="flex"   /* flex makes the child card fill the cell height */
                 initial={index < pageSize ? false : { opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
@@ -72,7 +73,7 @@ export function ArticlesList({
                   delay: index < pageSize ? 0 : 0.04 * (index % pageSize),
                 }}
               >
-                <StandardCard article={article} />
+                <StandardCard article={article} className="w-full" />
               </motion.div>
             ),
           )}

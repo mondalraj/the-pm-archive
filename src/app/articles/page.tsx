@@ -13,6 +13,12 @@ export const metadata = buildMetadata({
 });
 
 /**
+ * Revalidate every hour — serves the cached static page instantly and
+ * rebuilds silently in the background.
+ */
+export const revalidate = 3600;
+
+/**
  * /articles — the full article index. The server fetches everything once
  * and hands it to a client list component which paginates via
  * IntersectionObserver (so readers never see a pagination control).

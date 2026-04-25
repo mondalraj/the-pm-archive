@@ -13,7 +13,9 @@ export function LatestArticles({ articles }: { articles: ArticleSummary[] }) {
   if (articles.length === 0) return null;
 
   const featured = articles[0];
-  const rest = articles.slice(1, 5);
+  // row 1: 1 card alongside the featured; row 2: up to 3 cards
+  const sideCard = articles[1];
+  const bottomRow = articles.slice(2, 5);
 
   return (
     <section id="latest" className="py-20 md:py-28">
@@ -46,28 +48,28 @@ export function LatestArticles({ articles }: { articles: ArticleSummary[] }) {
           </div>
         </Reveal>
 
-        <Stagger className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
-          <StaggerItem className="md:col-span-2">
-            <FeaturedCard article={featured} />
+        {/* Row 1: featured (2/3) + one card (1/3) */}
+        <Stagger className="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6">
+          <StaggerItem className="flex md:col-span-2">
+            <FeaturedCard article={featured} className="w-full" />
           </StaggerItem>
-          <div className="grid grid-cols-1 gap-4 md:gap-6">
-            {rest.slice(0, 2).map((article) => (
-              <StaggerItem key={article.slug}>
-                <StandardCard article={article} compact />
-              </StaggerItem>
-            ))}
-          </div>
+          {sideCard && (
+            <StaggerItem className="flex">
+              <StandardCard article={sideCard} descriptionClamp={4} className="w-full" />
+            </StaggerItem>
+          )}
         </Stagger>
 
-        {rest.length > 2 ? (
-          <Stagger className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
-            {rest.slice(2).map((article) => (
-              <StaggerItem key={article.slug}>
-                <StandardCard article={article} />
+        {/* Row 2+: three cards per row */}
+        {bottomRow.length > 0 && (
+          <Stagger className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6">
+            {bottomRow.map((article) => (
+              <StaggerItem key={article.slug} className="flex">
+                <StandardCard article={article} className="w-full" />
               </StaggerItem>
             ))}
           </Stagger>
-        ) : null}
+        )}
       </Container>
     </section>
   );

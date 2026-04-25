@@ -8,6 +8,12 @@ import { Marquee } from "@/components/motion/marquee";
 export const metadata = buildMetadata({ path: "/" });
 
 /**
+ * Revalidate every hour. Next.js serves the cached static page instantly
+ * and silently rebuilds it in the background after 3600 s.
+ */
+export const revalidate = 3600;
+
+/**
  * Home page. Server component — articles are fetched at request time
  * from the data-access layer (Prisma / Supabase Postgres).
  */

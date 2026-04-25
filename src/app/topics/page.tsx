@@ -12,6 +12,9 @@ export const metadata = buildMetadata({
   path: "/topics",
 });
 
+/** Revalidate every hour. */
+export const revalidate = 3600;
+
 export default async function TopicsPage() {
   const [articles, tagRows] = await Promise.all([
     getAllArticles(),
