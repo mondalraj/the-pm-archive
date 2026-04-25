@@ -19,6 +19,12 @@ export function SiteFooter() {
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
             {siteConfig.description}
           </p>
+          <Link
+            href="/#newsletter"
+            className="label-caps inline-flex border-b border-primary/30 pb-1 text-primary transition-all hover:border-primary"
+          >
+            Subscribe for free
+          </Link>
         </div>
 
         <div className="grid grid-cols-2 gap-8 md:col-span-2">
@@ -33,7 +39,7 @@ export function SiteFooter() {
             © {year} {siteConfig.name} All rights reserved.
           </p>
           <p className="label-caps text-muted-foreground">
-            Published weekly — Made for operators
+            Built for engineers, PMs, and founders
           </p>
         </Container>
       </div>

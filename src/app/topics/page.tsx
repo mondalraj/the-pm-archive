@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { getAllArticles, getAllTags } from "@/lib/articles";
 import { Container } from "@/components/ui/container";
@@ -7,7 +8,7 @@ import { Reveal } from "@/components/motion/reveal";
 export const metadata = buildMetadata({
   title: "Topics",
   description:
-    "Browse The P.M. Archive by topic. Search and filter articles by the subjects you care about.",
+    "Explore topics across product, engineering, growth, and startup execution. Find the next 5-minute read for your current challenge.",
   path: "/topics",
 });
 
@@ -28,8 +29,11 @@ export default async function TopicsPage() {
             Find articles by topic.
           </h1>
           <p className="mt-5 text-lg leading-relaxed text-muted-foreground md:text-xl">
-            Search for a keyword or pick a topic. The archive filters in real
-            time — no page reloads, no page numbers.
+            Jump straight to what matters now - pricing, onboarding, retention,
+            roadmap, shipping, and more. Filter instantly as you type.
+          </p>
+          <p className="label-caps mt-4 text-muted-foreground">
+            Get top picks weekly: <Link href="/#newsletter" className="text-primary transition-opacity hover:opacity-80">Subscribe for free</Link>
           </p>
         </header>
       </Reveal>

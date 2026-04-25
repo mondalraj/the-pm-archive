@@ -40,7 +40,7 @@ export function NewsletterForm({
         throw new Error(data.error ?? "Something went wrong. Please try again.");
       }
       setStatus("success");
-      setMessage("You're in. Watch your inbox for the next article.");
+      setMessage("You're subscribed. Your next issue lands this week.");
       setEmail("");
     } catch (err) {
       setStatus("error");
@@ -85,7 +85,7 @@ export function NewsletterForm({
             : "bg-primary text-primary-foreground hover:bg-primary/90",
         )}
       >
-        {status === "loading" ? "Sending…" : "Join the Archive"}
+        {status === "loading" ? "Subscribing..." : "Subscribe for free"}
       </button>
 
       <p

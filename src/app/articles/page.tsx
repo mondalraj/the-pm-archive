@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { getAllArticles } from "@/lib/articles";
 import { Container } from "@/components/ui/container";
@@ -7,7 +8,7 @@ import { Reveal } from "@/components/motion/reveal";
 export const metadata = buildMetadata({
   title: "Articles",
   description:
-    "Browse every article in The P.M. Archive — deep reads on product, strategy, growth, leadership, and engineering.",
+    "Browse every 5-minute article in The P.M. Archive on product, engineering, startup strategy, and growth execution.",
   path: "/articles",
 });
 
@@ -28,7 +29,8 @@ export default async function ArticlesIndexPage() {
             Every article, in one place.
           </h1>
           <p className="mt-5 text-lg leading-relaxed text-muted-foreground md:text-xl">
-            Scroll to load more. Filter by topic from the{" "}
+            Fast, practical reads for teams shipping products in real markets.
+            Scroll to keep exploring, or filter by topic from the{" "}
             <a
               href="/topics"
               className="underline decoration-primary/40 underline-offset-4 transition-colors hover:text-primary"
@@ -36,6 +38,15 @@ export default async function ArticlesIndexPage() {
               Topics
             </a>{" "}
             page.
+          </p>
+          <p className="label-caps mt-4 text-muted-foreground">
+            Prefer the weekly version?{" "}
+            <Link
+              href="/#newsletter"
+              className="text-primary transition-opacity hover:opacity-80"
+            >
+              Subscribe for free
+            </Link>
           </p>
         </header>
       </Reveal>

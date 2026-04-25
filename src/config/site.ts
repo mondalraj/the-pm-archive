@@ -6,22 +6,22 @@
 export const siteConfig = {
   name: "The P.M. Archive.",
   shortName: "P.M. Archive",
-  tagline: "Ideas worth reading. Summarized by AI.",
+  tagline: "5-minute reads for people building real products.",
   description:
-    "We condense the world's best PM newsletters into high-signal summaries, complete with code, analogies, and key takeaways.",
+    "The sharpest product, engineering, and startup insights in focused 5-minute reads you can apply to ship faster, reduce risk, and grow revenue.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   locale: "en_US",
   author: { name: "The P.M. Archive" },
   nav: [
     { label: "Articles", href: "/articles" },
     { label: "Topics", href: "/topics" },
-    { label: "Newsletter", href: "/#newsletter" },
+    { label: "Subscribe", href: "/#newsletter" },
   ],
   footerNav: {
     explore: [
       { label: "Articles", href: "/articles" },
       { label: "Topics", href: "/topics" },
-      { label: "Newsletter", href: "/#newsletter" },
+      { label: "Subscribe", href: "/#newsletter" },
       { label: "Contact", href: "/contact" },
     ],
     legal: [

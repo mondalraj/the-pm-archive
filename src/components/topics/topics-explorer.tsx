@@ -54,7 +54,7 @@ export function TopicsExplorer({
                 id="topics-search"
                 type="search"
                 autoComplete="off"
-                placeholder="Search articles…"
+                placeholder="Search by topic, challenge, or tool..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="w-full border border-border bg-surface px-4 py-3 font-sans text-base text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
@@ -168,9 +168,10 @@ function TagPill({
 function EmptyState({ onClear }: { onClear: () => void }) {
   return (
     <div className="flex flex-col items-start gap-4 border border-dashed border-border bg-surface/40 p-10">
-      <p className="font-serif text-2xl italic text-muted-foreground">No matching articles.</p>
+      <p className="font-serif text-2xl italic text-muted-foreground">No matching articles yet.</p>
       <p className="text-muted-foreground">
-        Try a different keyword, or clear your filters to see the full archive.
+        Try a broader keyword, or clear filters to discover what other builders
+        are reading right now.
       </p>
       <button
         type="button"

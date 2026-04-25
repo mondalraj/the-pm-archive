@@ -12,14 +12,14 @@ export function RelatedArticles({ articles }: { articles: ArticleSummary[] }) {
         <div>
           <p className="label-caps mb-3 text-primary">Continued reading</p>
           <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">
-            More from the Archive
+            Keep your momentum
           </h2>
         </div>
         <Link
           href="/articles"
           className="label-caps hidden border-b border-border pb-1 text-muted-foreground transition-colors hover:text-primary md:inline-block"
         >
-          View all
+          Explore archive
         </Link>
       </div>
 

@@ -46,7 +46,7 @@ export function SiteHeader() {
             size="sm"
             className="hidden sm:inline-flex"
           >
-            Subscribe
+            Subscribe for Free
           </ButtonLink>
           <button
             type="button"
@@ -86,7 +86,7 @@ export function SiteHeader() {
               size="md"
               className="mt-3 w-full"
             >
-              Subscribe
+              Subscribe for Free
             </ButtonLink>
           </nav>
         </div>

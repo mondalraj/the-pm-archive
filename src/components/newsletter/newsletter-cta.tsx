@@ -18,17 +18,21 @@ export function NewsletterCta() {
             className="pointer-events-none absolute -right-32 -top-32 size-96 rounded-full bg-white/20 blur-[120px]"
           />
           <div className="relative z-10 max-w-2xl text-white">
-            <p className="label-caps mb-5 text-white/70">The P.M. Archive</p>
+            <p className="label-caps mb-5 text-white/70">The weekly builder brief</p>
             <h2 className="font-serif text-3xl font-medium leading-tight tracking-tight md:text-5xl">
-              Don&apos;t miss the next article.
+              Subscribe for free. Build with better signal.
             </h2>
             <p className="mt-5 text-base leading-relaxed text-white/80 md:text-lg">
-              Join 42,000+ product leaders getting the week&apos;s best writing,
-              summarized into a 10-minute read. One email. Every Sunday.
+              Get one focused email each week with 5-minute reads on product,
+              engineering, growth, and execution - built to help you make
+              smarter roadmap and revenue decisions.
+            </p>
+            <p className="label-caps mt-4 text-white/70">
+              Next issue drops this week
             </p>
             <NewsletterForm variant="dark" className="mt-8" />
             <p className="label-caps mt-6 text-white/50">
-              No spam. Ever. Unsubscribe in one click.
+              Free forever. Takes 10 seconds. Unsubscribe anytime.
             </p>
           </div>
         </div>

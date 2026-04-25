@@ -21,7 +21,7 @@ export default async function HomePage() {
     "Strategy",
     "Growth",
     "Leadership",
-    "AI",
+    "Developer Tools",
     "Engineering",
     "Design",
   ];
@@ -31,10 +31,10 @@ export default async function HomePage() {
     <>
       <Hero />
       <LatestArticles articles={articles} />
+      <NewsletterCta />
       <section aria-hidden className="relative overflow-hidden border-y border-border py-10">
         <Marquee items={topics} duration={80} />
       </section>
-      <NewsletterCta />
     </>
   );
 }
