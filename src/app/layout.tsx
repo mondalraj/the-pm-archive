@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { fontSans, fontSerif } from "@/lib/fonts";
 import { buildMetadata } from "@/lib/seo";
 import { siteConfig } from "@/config/site";
@@ -56,6 +57,7 @@ export default function RootLayout({
             <SiteFooter />
           </div>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
