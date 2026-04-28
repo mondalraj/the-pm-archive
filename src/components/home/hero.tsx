@@ -41,21 +41,20 @@ export function Hero() {
       <Container className="relative py-20 text-center md:py-32">
         <Reveal immediate delay={0}>
           <p className="label-caps mb-6 text-primary">
-            The P.M. Archive - Built for operators
+            P.M. ARCHIVE — BUILT FOR BUSY PRODUCT LEADERS, ENGINEERS & FOUNDERS
           </p>
         </Reveal>
 
-        <h1 className="mx-auto max-w-4xl font-serif text-[clamp(2.5rem,6vw,5rem)] font-medium leading-[1.05] tracking-tight">
+        <h1 className="mx-auto max-w-4xl font-serif text-[clamp(2.5rem,6vw,4rem)] font-medium leading-[1.05] tracking-tight">
           <span className="block text-foreground display-glow">
             <SplitHeadline
-              text="Ideas worth reading."
-              italic
+              text="5-minute product & AI insights that actually move the needle."
               delay={0.15}
             />
           </span>
-          <span className="block text-muted-foreground">
+          {/* <span className="block text-muted-foreground">
             <SplitHeadline text="Applied in 5 minutes." delay={0.55} />
-          </span>
+          </span> */}
         </h1>
 
         <Reveal immediate delay={1.05}>
@@ -76,15 +75,15 @@ export function Hero() {
               Read 5-Minute Articles
             </ButtonLink>
           </div>
-          <p className="mt-4 label-caps text-muted-foreground">
+          {/* <p className="mt-4 label-caps text-muted-foreground">
             1 practical issue every week for engineers, PMs, and founders
-          </p>
+          </p> */}
         </Reveal>
 
         <Reveal immediate delay={1.35}>
           <dl className="mx-auto mt-16 grid max-w-xl grid-cols-3 gap-6 border-t border-border pt-10">
             <Stat value="5 min" label="Read time" />
-            <Stat value="1x" label="Per week" />
+            <Stat value="1x / week" label="Delivered every Tuesday" />
             <Stat value="Zero fluff" label="Just signal" />
           </dl>
         </Reveal>

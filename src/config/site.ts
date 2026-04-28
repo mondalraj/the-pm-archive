@@ -4,14 +4,14 @@
  * Update here instead of hunting through files.
  */
 export const siteConfig = {
-  name: "The P.M. Archive.",
+  name: "P.M. Archive.",
   shortName: "P.M. Archive",
-  tagline: "5-minute reads for people building real products.",
+  tagline: "5-minute product & AI insights that actually move the needle.",
   description:
-    "The sharpest product, engineering, and startup insights in focused 5-minute reads you can apply to ship faster, reduce risk, and grow revenue.",
+    "Curated, no-fluff breakdowns on product strategy, agentic AI, startup execution, growth, and engineering leadership. One focused email every week. Applied the same day.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   locale: "en_US",
-  author: { name: "The P.M. Archive" },
+  author: { name: "P.M. Archive" },
   nav: [
     { label: "Articles", href: "/articles" },
     { label: "Topics", href: "/topics" },

@@ -8,7 +8,7 @@ import { Reveal } from "@/components/motion/reveal";
 export const metadata = buildMetadata({
   title: "Articles",
   description:
-    "Browse every 5-minute article in The P.M. Archive on product, engineering, startup strategy, and growth execution.",
+    "Browse every 5-minute article in P.M. Archive on product, engineering, startup strategy, and growth execution.",
   path: "/articles",
 });
 

@@ -89,6 +89,17 @@ function extractImageUrl(markdown) {
   return img?.[1] ?? "";
 }
 
+function parseMetadataDate(rawDate) {
+  const normalizedDate = normalizeWhitespace(rawDate ?? "");
+  const isoDate = normalizedDate.match(/\b(\d{4}-\d{2}-\d{2})\b/);
+  if (isoDate?.[1]) return isoDate[1];
+
+  const parsed = new Date(`${normalizedDate} UTC`);
+  if (!Number.isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
+
+  return TODAY;
+}
+
 function extractMeta(markdown) {
   const metadataWindow = markdown
     .split("\n")
@@ -98,13 +109,13 @@ function extractMeta(markdown) {
     .replace(/\*(?=\S)|(?<=\S)\*/g, "");
 
   const sourceMatch = metadataWindow.match(/Source:\s*([^\n\r·•—|]+)/i);
-  const authorMatch = metadataWindow.match(/Author:\s*([^\n\r·•—|]+)/i);
-  const dateMatch = metadataWindow.match(/Date:\s*(\d{4}-\d{2}-\d{2})/i);
+  const authorMatch = metadataWindow.match(/Authors?:\s*([^\n\r·•—|]+)/i);
+  const dateMatch = metadataWindow.match(/Date:\s*([^\n\r·•—|]+)/i);
 
   return {
     sourceName: normalizeWhitespace(sourceMatch?.[1] ?? "Unknown Source"),
     authorName: normalizeWhitespace(authorMatch?.[1] ?? "Unknown Author"),
-    dateStr: dateMatch?.[1] ?? TODAY,
+    dateStr: parseMetadataDate(dateMatch?.[1]),
   };
 }
 

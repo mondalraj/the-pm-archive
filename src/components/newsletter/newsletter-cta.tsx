@@ -20,7 +20,7 @@ export function NewsletterCta() {
           <div className="relative z-10 max-w-2xl text-white">
             <p className="label-caps mb-5 text-white/70">The weekly builder brief</p>
             <h2 className="font-serif text-3xl font-medium leading-tight tracking-tight md:text-5xl">
-              Subscribe for free. Build with better signal.
+              Subscribe for free. Get the signal. Skip the noise.
             </h2>
             <p className="mt-5 text-base leading-relaxed text-white/80 md:text-lg">
               Get one focused email each week with 5-minute reads on product,
@@ -28,11 +28,11 @@ export function NewsletterCta() {
               smarter roadmap and revenue decisions.
             </p>
             <p className="label-caps mt-4 text-white/70">
-              Next issue drops this week
+             Free forever. Takes 5 seconds. Unsubscribe anytime.
             </p>
             <NewsletterForm variant="dark" className="mt-8" />
-            <p className="label-caps mt-6 text-white/50">
-              Free forever. Takes 10 seconds. Unsubscribe anytime.
+            <p className="mt-6 text-white/50">
+              Join 1,872+ product leaders, engineers & founders already getting better every Tuesday.
             </p>
           </div>
         </div>

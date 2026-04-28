@@ -1,4 +1,4 @@
-# The P.M. Archive
+# P.M. Archive
 
 A newsletter-archive site that condenses high-signal PM newsletters into short, well-formatted summaries.
 

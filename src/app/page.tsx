@@ -1,6 +1,7 @@
 import { buildMetadata } from "@/lib/seo";
 import { getAllArticles, getAllTags } from "@/lib/articles";
 import { Hero } from "@/components/home/hero";
+import { HowItWorksStrip } from "@/components/home/how-it-works-strip";
 import { LatestArticles } from "@/components/home/latest-articles";
 import { NewsletterCta } from "@/components/newsletter/newsletter-cta";
 import { Marquee } from "@/components/motion/marquee";
@@ -36,6 +37,7 @@ export default async function HomePage() {
   return (
     <>
       <Hero />
+      <HowItWorksStrip />
       <LatestArticles articles={articles} />
       <NewsletterCta />
       <section aria-hidden className="relative overflow-hidden border-y border-border py-10">

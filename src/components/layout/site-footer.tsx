@@ -17,7 +17,9 @@ export function SiteFooter() {
             <span className="text-primary">.</span>
           </Link>
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-            {siteConfig.description}
+            The sharpest 5-minute product, AI, and startup insights delivered
+            weekly. Built exclusively for PMs, engineers, and founders who want
+            to ship faster and make smarter decisions.
           </p>
           <Link
             href="/#newsletter"
@@ -28,7 +30,10 @@ export function SiteFooter() {
         </div>
 
         <div className="grid grid-cols-2 gap-8 md:col-span-2">
-          <FooterColumn title="Explore" items={[...siteConfig.footerNav.explore]} />
+          <FooterColumn
+            title="Explore"
+            items={[...siteConfig.footerNav.explore]}
+          />
           <FooterColumn title="Legal" items={[...siteConfig.footerNav.legal]} />
         </div>
       </Container>
