@@ -1,3 +1,20 @@
+// Paginated fetch for articles
+export async function getArticlesPage({ offset, limit }: { offset: number; limit: number }): Promise<{ articles: ArticleSummary[]; hasMore: boolean }> {
+  const rows = await withRetry(() =>
+    prisma.article.findMany({
+      select: summarySelect,
+      orderBy: [
+        { createdAt: "desc" },
+        { id: "desc" }, // Ensure stable ordering
+      ],
+      skip: offset,
+      take: limit + 1, // Fetch one extra to check if there's more
+    })
+  );
+  const hasMore = rows.length > limit;
+  const articles = rows.slice(0, limit).map(toSummary);
+  return { articles, hasMore };
+}
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import type { Article, ArticleSummary, ArticleTag } from "@/types/article";

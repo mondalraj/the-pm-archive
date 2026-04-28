@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
-import { getAllArticles } from "@/lib/articles";
 import { Container } from "@/components/ui/container";
 import { ArticlesList } from "@/components/articles/articles-list";
 import { Reveal } from "@/components/motion/reveal";
@@ -23,9 +22,7 @@ export const revalidate = 3600;
  * and hands it to a client list component which paginates via
  * IntersectionObserver (so readers never see a pagination control).
  */
-export default async function ArticlesIndexPage() {
-  const articles = await getAllArticles();
-
+export default function ArticlesIndexPage() {
   return (
     <Container className="py-16 md:py-24">
       <Reveal immediate>
@@ -57,7 +54,7 @@ export default async function ArticlesIndexPage() {
         </header>
       </Reveal>
 
-      <ArticlesList articles={articles} pageSize={6} />
+      <ArticlesList pageSize={10} />
     </Container>
   );
 }
