@@ -1,14 +1,25 @@
-// Paginated fetch for articles
-export async function getArticlesPage({ offset, limit }: { offset: number; limit: number }): Promise<{ articles: ArticleSummary[]; hasMore: boolean }> {
+// Paginated fetch for articles, with optional tag and search filtering
+export async function getArticlesPage({ offset, limit, tag, q }: { offset: number; limit: number; tag?: string; q?: string }): Promise<{ articles: ArticleSummary[]; hasMore: boolean }> {
+  const where: any = {};
+  if (tag) {
+    where.tags = { some: { name: tag } };
+  }
+  if (q) {
+    where.OR = [
+      { title: { contains: q, mode: "insensitive" } },
+      { description: { contains: q, mode: "insensitive" } },
+    ];
+  }
   const rows = await withRetry(() =>
     prisma.article.findMany({
       select: summarySelect,
+      where,
       orderBy: [
         { createdAt: "desc" },
-        { id: "desc" }, // Ensure stable ordering
+        { id: "desc" },
       ],
       skip: offset,
-      take: limit + 1, // Fetch one extra to check if there's more
+      take: limit + 1,
     })
   );
   const hasMore = rows.length > limit;

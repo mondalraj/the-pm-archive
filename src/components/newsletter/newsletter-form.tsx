@@ -53,41 +53,45 @@ export function NewsletterForm({
   return (
     <form
       onSubmit={onSubmit}
-      className={cn("flex flex-col gap-3 sm:flex-row", className)}
+      className={cn(
+        "flex flex-col gap-3 sm:flex-row sm:gap-0 w-full",
+        className
+      )}
       noValidate
     >
       <label className="sr-only" htmlFor="newsletter-email">
         Email address
       </label>
-      <input
-        id="newsletter-email"
-        type="email"
-        name="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        autoComplete="email"
-        placeholder="your@email.com"
-        className={cn(
-          "h-12 flex-1 border px-5 text-base outline-none transition-colors focus:border-white",
-          isDark
-            ? "border-white/25 bg-white/10 text-white placeholder:text-white/50 focus:ring-2 focus:ring-white/40"
-            : "border-border bg-surface text-foreground placeholder:text-muted-foreground focus:border-primary",
-        )}
-      />
-      <button
-        type="submit"
-        disabled={status === "loading"}
-        className={cn(
-          "label-caps inline-flex h-12 items-center justify-center px-8 transition-colors disabled:opacity-60",
-          isDark
-            ? "bg-white text-primary hover:bg-white/90"
-            : "bg-primary text-primary-foreground hover:bg-primary/90",
-        )}
-      >
-        {status === "loading" ? "Subscribing..." : "Subscribe for free"}
-      </button>
-
+      <div className="flex flex-col w-full sm:flex-row sm:w-auto sm:flex-1">
+        <input
+          id="newsletter-email"
+          type="email"
+          name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          autoComplete="email"
+          placeholder="your@email.com"
+          className={cn(
+            "h-14 w-full border px-5 text-base outline-none transition-colors focus:border-white rounded-t-md sm:rounded-l-md sm:rounded-t-none sm:w-auto sm:flex-1",
+            isDark
+              ? "border-white/25 bg-white/10 text-white placeholder:text-white/50 focus:ring-2 focus:ring-white/40"
+              : "border-border bg-surface text-foreground placeholder:text-muted-foreground focus:border-primary",
+          )}
+        />
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className={cn(
+            "label-caps h-14 w-full sm:w-auto sm:inline-flex items-center justify-center px-8 transition-colors disabled:opacity-60 rounded-b-md sm:rounded-r-md sm:rounded-b-none",
+            isDark
+              ? "bg-white text-primary hover:bg-white/90"
+              : "bg-primary text-primary-foreground hover:bg-primary/90",
+          )}
+        >
+          {status === "loading" ? "Subscribing..." : "Subscribe for free"}
+        </button>
+      </div>
       <p
         role="status"
         aria-live="polite"

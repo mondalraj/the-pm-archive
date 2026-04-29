@@ -1,45 +1,86 @@
 "use client";
 
-import { useMemo, useState } from "react";
+
+import { useEffect, useRef, useState, useCallback } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { ArticleSummary } from "@/types/article";
 import { StandardCard } from "@/components/home/standard-card";
 import { cn } from "@/lib/utils";
+
+type FetchState = "idle" | "loading" | "error";
+type ApiResponse = { articles: ArticleSummary[]; hasMore: boolean };
 
 /**
  * Client-side topic explorer.
  *  - Search filters on title, description, newsletter name, author, tags.
  *  - Tag pills narrow further; clicking the active tag clears it.
  */
-export function TopicsExplorer({
-  articles,
-  tags,
-}: {
-  articles: ArticleSummary[];
-  tags: string[];
-}) {
+export function TopicsExplorer({ tags }: { tags: string[] }) {
   const reduce = useReducedMotion();
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [articles, setArticles] = useState<ArticleSummary[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [fetchState, setFetchState] = useState<FetchState>("idle");
+  const [error, setError] = useState<string | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const [page, setPage] = useState(0);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return articles.filter((article) => {
-      const tagNames = article.tags.map((t) => t.name);
-      if (activeTag && !tagNames.includes(activeTag)) return false;
-      if (!q) return true;
-      const haystack = [
-        article.title,
-        article.description,
-        article.sourceName,
-        article.authorName,
-        ...tagNames,
-      ]
-        .join(" ")
-        .toLowerCase();
-      return haystack.includes(q);
-    });
-  }, [articles, query, activeTag]);
+  // Fetch articles page
+  const fetchArticles = useCallback(async (reset = false) => {
+    if (!hasMore && !reset) return;
+    setFetchState("loading");
+    setError(null);
+    if (reset) setArticles([]); // Hide previous articles immediately on topic/search change
+    try {
+      const offset = reset ? 0 : articles.length;
+      const params = new URLSearchParams({
+        offset: String(offset),
+        limit: "10",
+      });
+      if (activeTag) params.set("tag", activeTag);
+      if (query.trim()) params.set("q", query.trim());
+      const res = await fetch(`/api/articles?${params.toString()}`);
+      if (!res.ok) throw new Error("Failed to fetch articles");
+      const data: ApiResponse = await res.json();
+      setArticles((prev) => {
+        if (reset) return data.articles;
+        const existingIds = new Set(prev.map((a) => a.id));
+        const newArticles = data.articles.filter((a) => !existingIds.has(a.id));
+        return [...prev, ...newArticles];
+      });
+      setHasMore(data.hasMore);
+      setFetchState("idle");
+      setPage((p) => (reset ? 1 : p + 1));
+    } catch (err: any) {
+      setFetchState("error");
+      setError(err?.message || "Unknown error");
+    }
+  }, [articles.length, hasMore, activeTag, query]);
+
+  // Initial fetch and refetch on filter change
+  useEffect(() => {
+    (async () => {
+      await fetchArticles(true);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTag, query]);
+
+  // IntersectionObserver for infinite scroll
+  useEffect(() => {
+    if (!hasMore || fetchState === "loading" || fetchState === "error") return;
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          fetchArticles();
+        }
+      }
+    }, { rootMargin: "400px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [fetchArticles, hasMore, fetchState]);
 
   return (
     <div>
@@ -91,7 +132,9 @@ export function TopicsExplorer({
         <div>
           <div className="mb-6 flex items-baseline justify-between gap-4 border-b border-border pb-4">
             <p className="label-caps text-muted-foreground">
-              {filtered.length} {filtered.length === 1 ? "result" : "results"}
+              {fetchState === "loading" && articles.length === 0
+                ? "Loading…"
+                : `${articles.length} ${articles.length === 1 ? "result" : "results"}`}
             </p>
             {activeTag ? (
               <button
@@ -104,7 +147,13 @@ export function TopicsExplorer({
             ) : null}
           </div>
 
-          {filtered.length === 0 ? (
+          {fetchState === "error" ? (
+            <div className="text-destructive label-caps mb-4">{error || "Failed to load articles."}</div>
+          ) : null}
+
+          {articles.length === 0 && fetchState === "loading" ? (
+            <TopicsSkeletonGrid />
+          ) : articles.length === 0 && fetchState !== "loading" ? (
             <EmptyState
               onClear={() => {
                 setQuery("");
@@ -114,13 +163,13 @@ export function TopicsExplorer({
           ) : (
             <motion.div layout={!reduce} className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2">
               <AnimatePresence mode="popLayout">
-                {filtered.map((article) =>
+                {articles.map((article) =>
                   reduce ? (
-                    <StandardCard key={article.slug} article={article} />
+                    <StandardCard key={article.id ?? `${article.slug}-${article.createdAt}`} article={article} />
                   ) : (
                     <motion.div
                       layout
-                      key={article.slug}
+                      key={article.id ?? `${article.slug}-${article.createdAt}`}
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -8 }}
@@ -133,10 +182,54 @@ export function TopicsExplorer({
               </AnimatePresence>
             </motion.div>
           )}
+          <div ref={sentinelRef} className="mt-8 flex flex-col items-center justify-center gap-2">
+            {fetchState === "loading" && articles.length > 0 ? (
+              <LoadingIndicator />
+            ) : null}
+            {!hasMore && articles.length > 0 ? (
+              <p className="label-caps text-muted-foreground">You&apos;ve reached the end of the archive</p>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>
   );
+
+// Skeleton grid for loading state
+function TopicsSkeletonGrid() {
+  // Show 6 skeleton cards
+  return (
+    <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div
+          key={i}
+          className="animate-pulse rounded-lg border border-border bg-surface p-6 min-h-[180px] flex flex-col gap-4"
+        >
+          <div className="h-5 w-1/3 rounded bg-muted" />
+          <div className="h-7 w-2/3 rounded bg-muted" />
+          <div className="h-4 w-full rounded bg-muted/70" />
+          <div className="h-4 w-5/6 rounded bg-muted/60" />
+          <div className="mt-auto flex items-center gap-3">
+            <div className="h-8 w-8 rounded-full bg-muted/80" />
+            <div className="h-4 w-1/4 rounded bg-muted/60" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function LoadingIndicator() {
+  return (
+    <div className="flex items-center gap-3 text-muted-foreground">
+      <span className="relative flex size-2">
+        <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
+        <span className="relative inline-flex size-2 rounded-full bg-primary" />
+      </span>
+      <span className="label-caps">Loading more</span>
+    </div>
+  );
+}
 }
 
 function TagPill({

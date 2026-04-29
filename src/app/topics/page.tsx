@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
-import { getAllArticles, getAllTags } from "@/lib/articles";
+import { getAllTags } from "@/lib/articles";
 import { Container } from "@/components/ui/container";
 import { TopicsExplorer } from "@/components/topics/topics-explorer";
 import { Reveal } from "@/components/motion/reveal";
@@ -16,11 +16,7 @@ export const metadata = buildMetadata({
 export const revalidate = 3600;
 
 export default async function TopicsPage() {
-  const [articles, tagRows] = await Promise.all([
-    getAllArticles(),
-    getAllTags(),
-  ]);
-
+  const tagRows = await getAllTags();
   const tags = tagRows.map((t) => t.name).sort((a, b) => a.localeCompare(b));
 
   return (
@@ -41,7 +37,7 @@ export default async function TopicsPage() {
         </header>
       </Reveal>
 
-      <TopicsExplorer articles={articles} tags={tags} />
+      <TopicsExplorer tags={tags} />
     </Container>
   );
 }
