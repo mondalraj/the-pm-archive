@@ -1,10 +1,12 @@
 import { buildMetadata } from "@/lib/seo";
-import { getAllArticles, getAllTags } from "@/lib/articles";
+import { getAllTags, getArticlesPage } from "@/lib/articles";
 import { Hero } from "@/components/home/hero";
 import { HowItWorksStrip } from "@/components/home/how-it-works-strip";
 import { LatestArticles } from "@/components/home/latest-articles";
 import { NewsletterCta } from "@/components/newsletter/newsletter-cta";
 import { Marquee } from "@/components/motion/marquee";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 
 export const metadata = buildMetadata({ path: "/" });
 
@@ -19,10 +21,20 @@ export const revalidate = 3600;
  * from the data-access layer (Prisma / Supabase Postgres).
  */
 export default async function HomePage() {
-  const [articles, tagRows] = await Promise.all([getAllArticles(), getAllTags()]);
-
-  // Marquee strip: real tags from the DB, with a quiet fallback so the
-  // page still feels alive when the archive is empty.
+  // SSR/SSG: Prefetch latest articles and tags for hydration
+  const queryClient = new QueryClient();
+  // Prefetch latest articles (limit 6)
+  await queryClient.prefetchQuery({
+    queryKey: ["latest-articles"],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/articles?offset=0&limit=6`, { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to fetch articles");
+      const data = await res.json();
+      return data.articles;
+    },
+  });
+  // Prefetch tags for the Marquee
+  const tagRows = await getAllTags();
   const fallbackTopics = [
     "Product",
     "Strategy",
@@ -35,14 +47,14 @@ export default async function HomePage() {
   const topics = Array.from(new Set([...tagRows.map((t) => t.name), ...fallbackTopics]));
 
   return (
-    <>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <Hero />
       <HowItWorksStrip />
-      <LatestArticles articles={articles} />
+      <LatestArticles />
       <NewsletterCta />
       <section aria-hidden className="relative overflow-hidden border-y border-border py-10">
         <Marquee items={topics} duration={80} />
       </section>
-    </>
+    </HydrationBoundary>
   );
 }

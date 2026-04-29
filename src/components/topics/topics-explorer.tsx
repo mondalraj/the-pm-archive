@@ -1,14 +1,15 @@
 "use client";
 
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { ArticleSummary } from "@/types/article";
 import { StandardCard } from "@/components/home/standard-card";
 import { cn } from "@/lib/utils";
-
-type FetchState = "idle" | "loading" | "error";
+import { useInfiniteTopics } from "@/hooks/use-infinite-topics";
 type ApiResponse = { articles: ArticleSummary[]; hasMore: boolean };
+
+
 
 /**
  * Client-side topic explorer.
@@ -19,68 +20,53 @@ export function TopicsExplorer({ tags }: { tags: string[] }) {
   const reduce = useReducedMotion();
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
-  const [articles, setArticles] = useState<ArticleSummary[]>([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [fetchState, setFetchState] = useState<FetchState>("idle");
-  const [error, setError] = useState<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const [page, setPage] = useState(0);
+  const pageSize = 10;
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useInfiniteTopics({ tag: activeTag, query, pageSize }) as {
+    data: { pages: ApiResponse[] } | undefined;
+    fetchNextPage: () => void;
+    hasNextPage: boolean | undefined;
+    isFetchingNextPage: boolean;
+    isLoading: boolean;
+    isError: boolean;
+    error: Error | null;
+    refetch: () => void;
+  };
+  // Flatten all pages into a single articles array
+  const articles: ArticleSummary[] = data?.pages.flatMap((page) => page.articles) ?? [];
 
-  // Fetch articles page
-  const fetchArticles = useCallback(async (reset = false) => {
-    if (!hasMore && !reset) return;
-    setFetchState("loading");
-    setError(null);
-    if (reset) setArticles([]); // Hide previous articles immediately on topic/search change
-    try {
-      const offset = reset ? 0 : articles.length;
-      const params = new URLSearchParams({
-        offset: String(offset),
-        limit: "10",
-      });
-      if (activeTag) params.set("tag", activeTag);
-      if (query.trim()) params.set("q", query.trim());
-      const res = await fetch(`/api/articles?${params.toString()}`);
-      if (!res.ok) throw new Error("Failed to fetch articles");
-      const data: ApiResponse = await res.json();
-      setArticles((prev) => {
-        if (reset) return data.articles;
-        const existingIds = new Set(prev.map((a) => a.id));
-        const newArticles = data.articles.filter((a) => !existingIds.has(a.id));
-        return [...prev, ...newArticles];
-      });
-      setHasMore(data.hasMore);
-      setFetchState("idle");
-      setPage((p) => (reset ? 1 : p + 1));
-    } catch (err: any) {
-      setFetchState("error");
-      setError(err?.message || "Unknown error");
-    }
-  }, [articles.length, hasMore, activeTag, query]);
+  // Remove fetchArticles and related state
 
-  // Initial fetch and refetch on filter change
+  // Refetch on filter change
   useEffect(() => {
-    (async () => {
-      await fetchArticles(true);
-    })();
+    refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTag, query]);
 
   // IntersectionObserver for infinite scroll
   useEffect(() => {
-    if (!hasMore || fetchState === "loading" || fetchState === "error") return;
+    if (!hasNextPage || isFetchingNextPage || isLoading || isError) return;
     const el = sentinelRef.current;
     if (!el) return;
     const io = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
-          fetchArticles();
+          fetchNextPage();
         }
       }
     }, { rootMargin: "400px 0px" });
     io.observe(el);
     return () => io.disconnect();
-  }, [fetchArticles, hasMore, fetchState]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError]);
 
   return (
     <div>
@@ -132,7 +118,7 @@ export function TopicsExplorer({ tags }: { tags: string[] }) {
         <div>
           <div className="mb-6 flex items-baseline justify-between gap-4 border-b border-border pb-4">
             <p className="label-caps text-muted-foreground">
-              {fetchState === "loading" && articles.length === 0
+              {isLoading && articles.length === 0
                 ? "Loading…"
                 : `${articles.length} ${articles.length === 1 ? "result" : "results"}`}
             </p>
@@ -147,13 +133,13 @@ export function TopicsExplorer({ tags }: { tags: string[] }) {
             ) : null}
           </div>
 
-          {fetchState === "error" ? (
-            <div className="text-destructive label-caps mb-4">{error || "Failed to load articles."}</div>
+          {isError ? (
+            <div className="text-destructive label-caps mb-4">{error?.message || "Failed to load articles."}</div>
           ) : null}
 
-          {articles.length === 0 && fetchState === "loading" ? (
+          {articles.length === 0 && isLoading ? (
             <TopicsSkeletonGrid />
-          ) : articles.length === 0 && fetchState !== "loading" ? (
+          ) : articles.length === 0 && !isLoading ? (
             <EmptyState
               onClear={() => {
                 setQuery("");
@@ -183,10 +169,10 @@ export function TopicsExplorer({ tags }: { tags: string[] }) {
             </motion.div>
           )}
           <div ref={sentinelRef} className="mt-8 flex flex-col items-center justify-center gap-2">
-            {fetchState === "loading" && articles.length > 0 ? (
+            {isFetchingNextPage && articles.length > 0 ? (
               <LoadingIndicator />
             ) : null}
-            {!hasMore && articles.length > 0 ? (
+            {!hasNextPage && articles.length > 0 && !isLoading ? (
               <p className="label-caps text-muted-foreground">You&apos;ve reached the end of the archive</p>
             ) : null}
           </div>

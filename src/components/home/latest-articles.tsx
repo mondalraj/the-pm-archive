@@ -1,5 +1,6 @@
+"use client";
 import Link from "next/link";
-import type { ArticleSummary } from "@/types/article";
+import { useLatestArticles } from "@/hooks/use-latest-articles";
 import { Container } from "@/components/ui/container";
 import { FeaturedCard } from "@/components/home/featured-card";
 import { StandardCard } from "@/components/home/standard-card";
@@ -9,11 +10,25 @@ import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
  * The 2+1 editorial grid on the home page. Articles arrive sorted DESC
  * by createdAt from the data layer; the most recent renders large.
  */
-export function LatestArticles({ articles }: { articles: ArticleSummary[] }) {
-  if (articles.length === 0) return null;
+export function LatestArticles() {
+  const { data: articles = [], isLoading, isError } = useLatestArticles();
+  if (isLoading) {
+    // Show skeleton grid (reuse your existing skeleton UI or add a simple fallback)
+    return (
+      <section id="latest" className="py-20 md:py-28">
+        <Container>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="animate-pulse rounded-lg border border-border bg-surface p-6 min-h-[180px] flex flex-col gap-4" />
+            ))}
+          </div>
+        </Container>
+      </section>
+    );
+  }
+  if (isError || articles.length === 0) return null;
 
   const featured = articles[0];
-  // row 1: 1 card alongside the featured; row 2: up to 3 cards
   const sideCard = articles[1];
   const bottomRow = articles.slice(2, 5);
 

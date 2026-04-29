@@ -1,16 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+
+import { useRef, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import type { ArticleSummary } from "@/types/article";
 import { StandardCard } from "@/components/home/standard-card";
-
-type FetchState = "idle" | "loading" | "error";
-
-type ApiResponse = {
-  articles: ArticleSummary[];
-  hasMore: boolean;
-};
+import { useInfiniteArticles } from "@/hooks/use-infinite-articles";
 
 /**
  * Client-side infinite-scroll list.
@@ -26,88 +21,72 @@ type ApiResponse = {
  * on newly revealed rows.
  */
 
+
 export function ArticlesList({ pageSize = 10 }: { pageSize?: number }) {
   const reduce = useReducedMotion();
-  const [articles, setArticles] = useState<ArticleSummary[]>([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [fetchState, setFetchState] = useState<FetchState>("idle");
-  const [error, setError] = useState<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const [page, setPage] = useState(0);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useInfiniteArticles(pageSize);
 
-  // Fetch articles page
-  const fetchArticles = useCallback(async () => {
-    if (!hasMore || fetchState === "loading") return;
-    setFetchState("loading");
-    setError(null);
-    try {
-      const res = await fetch(`/api/articles?offset=${articles.length}&limit=${pageSize}`);
-      if (!res.ok) throw new Error("Failed to fetch articles");
-      const data: ApiResponse = await res.json();
-      setArticles((prev) => {
-        const existingIds = new Set(prev.map((a) => a.id));
-        const newArticles = data.articles.filter((a) => !existingIds.has(a.id));
-        return [...prev, ...newArticles];
-      });
-      setHasMore(data.hasMore);
-      setFetchState("idle");
-      setPage((p) => p + 1);
-    } catch (err: any) {
-      setFetchState("error");
-      setError(err?.message || "Unknown error");
-    }
-  }, [articles.length, hasMore, fetchState, pageSize]);
+  // Flatten all pages into a single articles array
+  const articles: ArticleSummary[] = data?.pages.flatMap((page) => page.articles) ?? [];
 
-  // Initial fetch
+  // Infinite scroll observer
   useEffect(() => {
-    (async () => {
-      await fetchArticles();
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // IntersectionObserver for infinite scroll
-  useEffect(() => {
-    if (!hasMore || fetchState === "loading" || fetchState === "error") return;
+    if (!hasNextPage || isFetchingNextPage || isLoading || isError) return;
     const el = sentinelRef.current;
     if (!el) return;
     const io = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
-          fetchArticles();
+          fetchNextPage();
         }
       }
     }, { rootMargin: "400px 0px" });
     io.observe(el);
     return () => io.disconnect();
-  }, [fetchArticles, hasMore, fetchState]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError]);
 
   return (
     <ErrorBoundary>
       <div>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
           <AnimatePresence initial={false}>
-            {articles.map((article, index) => {
-              // Prefer id, fallback to slug+createdAt for uniqueness
-              const key = article.id ?? `${article.slug}-${article.createdAt}`;
-              return reduce ? (
-                <StandardCard key={key} article={article} />
-              ) : (
-                <motion.div
-                  key={key}
-                  className="flex"
-                  initial={index < pageSize ? false : { opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.55,
-                    ease: [0.22, 1, 0.36, 1],
-                    delay: index < pageSize ? 0 : 0.04 * (index % pageSize),
-                  }}
-                >
-                  <StandardCard article={article} className="w-full" />
-                </motion.div>
-              );
-            })}
+            {isLoading
+              ? Array.from({ length: pageSize }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="animate-pulse rounded-lg border border-border bg-surface p-6 min-h-[180px] flex flex-col gap-4"
+                  />
+                ))
+              : articles.map((article, index) => {
+                  const key = article.id ?? `${article.slug}-${article.createdAt}`;
+                  return reduce ? (
+                    <StandardCard key={key} article={article} />
+                  ) : (
+                    <motion.div
+                      key={key}
+                      className="flex"
+                      initial={index < pageSize ? false : { opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.55,
+                        ease: [0.22, 1, 0.36, 1],
+                        delay: index < pageSize ? 0 : 0.04 * (index % pageSize),
+                      }}
+                    >
+                      <StandardCard article={article} className="w-full" />
+                    </motion.div>
+                  );
+                })}
           </AnimatePresence>
         </div>
 
@@ -115,22 +94,20 @@ export function ArticlesList({ pageSize = 10 }: { pageSize?: number }) {
           ref={sentinelRef}
           className="mt-16 flex flex-col items-center justify-center gap-2"
         >
-          {fetchState === "error" ? (
-            <ErrorMessage message={error || "Failed to load articles."} onRetry={fetchArticles} />
-          ) : hasMore ? (
+          {isError ? (
+            <ErrorMessage message={error?.message || "Failed to load articles."} onRetry={refetch} />
+          ) : isFetchingNextPage ? (
             <LoadingIndicator />
-          ) : (
+          ) : !hasNextPage && !isLoading ? (
             <p className="label-caps text-muted-foreground">
               You&apos;ve reached the end of the archive
             </p>
-          )}
+          ) : null}
         </div>
       </div>
     </ErrorBoundary>
   );
 }
-
-
 function LoadingIndicator() {
   return (
     <div className="flex items-center gap-3 text-muted-foreground">
