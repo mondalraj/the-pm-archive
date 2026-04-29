@@ -13,7 +13,6 @@ import { ArticleBody } from "@/components/articles/article-body";
 import { AuthorCard } from "@/components/articles/author-card";
 import { RelatedArticles } from "@/components/articles/related-articles";
 import { ReadingProgress } from "@/components/articles/reading-progress";
-import { NewsletterCta } from "@/components/newsletter/newsletter-cta";
 
 type RouteParams = { slug: string };
 
@@ -105,7 +104,6 @@ export default async function ArticlePage({
           <RelatedArticles articles={related} />
         </Container>
       </article>
-      <NewsletterCta />
     </>
   );
 }

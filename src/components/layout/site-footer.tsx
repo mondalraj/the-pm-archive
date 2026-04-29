@@ -63,7 +63,7 @@ function FooterColumn({
     <div className="space-y-4">
       <h4 className="label-caps text-primary">{title}</h4>
       <ul className="space-y-2">
-        {items.map((item) => (
+        {items.filter((item) => item.href).map((item) => (
           <li key={item.href}>
             <Link
               href={item.href}

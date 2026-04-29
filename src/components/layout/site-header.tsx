@@ -27,7 +27,7 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          {siteConfig.nav.map((item) => (
+          {siteConfig.nav.filter((item) => item.href).map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -69,7 +69,7 @@ export function SiteHeader() {
       >
         <div className="min-h-0">
           <nav className="flex flex-col gap-1 px-6 py-4">
-            {siteConfig.nav.map((item) => (
+            {siteConfig.nav.filter((item) => item.href).map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

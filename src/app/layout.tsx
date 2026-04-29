@@ -6,6 +6,7 @@ import { siteConfig } from "@/config/site";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { NewsletterCta } from "@/components/newsletter/newsletter-cta";
 import { GrainOverlay } from "@/components/ui/grain-overlay";
 import { AmbientBackdrop } from "@/components/ui/ambient-backdrop";
 import { ReactQueryProvider } from "@/app/react-query-provider";
@@ -56,6 +57,7 @@ export default function RootLayout({
             <div className="ambient-above flex min-h-dvh flex-col">
               <SiteHeader />
               <main className="flex-1">{children}</main>
+              <NewsletterCta />
               <SiteFooter />
             </div>
           </ReactQueryProvider>

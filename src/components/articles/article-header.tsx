@@ -12,7 +12,7 @@ export function ArticleHeader({ article }: { article: Article }) {
   const primaryTag = article.tags[0]?.name;
 
   return (
-    <Container size="wide" className="pt-12 md:pt-20">
+    <Container size="default" className="pt-12 md:pt-20">
       <nav aria-label="Breadcrumb" className="mb-10">
         <ol className="label-caps flex flex-wrap items-center gap-2 text-muted-foreground">
           <li>
@@ -38,7 +38,7 @@ export function ArticleHeader({ article }: { article: Article }) {
       <p className="label-caps mb-5 text-primary">{article.sourceName}</p>
 
       <Reveal immediate delay={0.05}>
-        <h1 className="max-w-5xl font-serif text-[clamp(2.25rem,5vw,4.5rem)] font-medium leading-[1.05] tracking-tight text-foreground">
+        <h1 className="max-w-5xl font-serif text-[clamp(2.25rem,5vw,3.5rem)] font-medium leading-[1.05] tracking-tight text-foreground">
           {article.title}
         </h1>
       </Reveal>
@@ -65,17 +65,6 @@ export function ArticleHeader({ article }: { article: Article }) {
             </div>
           ) : null}
         </dl>
-      </div>
-
-      <div className="relative mt-12 aspect-[21/9] w-full overflow-hidden border border-border">
-        <Image
-          src={article.imageUrl}
-          alt={article.title}
-          fill
-          sizes="(min-width: 1024px) 1024px, 100vw"
-          className="object-cover"
-          priority
-        />
       </div>
     </Container>
   );

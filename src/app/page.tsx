@@ -1,9 +1,8 @@
 import { buildMetadata } from "@/lib/seo";
-import { getAllTags, getArticlesPage } from "@/lib/articles";
+import { getAllTags } from "@/lib/articles";
 import { Hero } from "@/components/home/hero";
 import { HowItWorksStrip } from "@/components/home/how-it-works-strip";
 import { LatestArticles } from "@/components/home/latest-articles";
-import { NewsletterCta } from "@/components/newsletter/newsletter-cta";
 import { Marquee } from "@/components/motion/marquee";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { QueryClient } from "@tanstack/react-query";
@@ -51,7 +50,6 @@ export default async function HomePage() {
       <Hero />
       <HowItWorksStrip />
       <LatestArticles />
-      <NewsletterCta />
       <section aria-hidden className="relative overflow-hidden border-y border-border py-10">
         <Marquee items={topics} duration={80} />
       </section>

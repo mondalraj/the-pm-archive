@@ -15,14 +15,14 @@ export const siteConfig = {
   nav: [
     { label: "Articles", href: "/articles" },
     { label: "Topics", href: "/topics" },
-    { label: "Subscribe", href: "/#newsletter" },
+    { label: "About Us", href: "/about" },
   ],
   footerNav: {
     explore: [
       { label: "Articles", href: "/articles" },
       { label: "Topics", href: "/topics" },
-      { label: "Subscribe", href: "/#newsletter" },
-      { label: "Contact", href: "/contact" },
+      { label: "About Us", href: "/about" },
+      { label: "Contact", href: "mailto:contact@pmarchive.com" },
     ],
     legal: [
       { label: "Privacy Policy", href: "/privacy" },
