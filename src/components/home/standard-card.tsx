@@ -58,8 +58,28 @@ export function StandardCard({
             sizes={compact ? "144px" : "(min-width: 1024px) 380px, 100vw"}
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
+          {/* Radial purple gradient overlay */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-10 block"
+            style={{
+              background:
+                "radial-gradient(circle at 60% 40%, rgba(124,58,237,0.22) 0%, rgba(124,58,237,0.10) 60%, transparent 100%)",
+              mixBlendMode: "multiply",
+            }}
+          />
+          {/* Dark mode stronger gradient */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-10 hidden dark:block"
+            style={{
+              background:
+                "radial-gradient(circle at 60% 40%, rgba(124,58,237,0.32) 0%, rgba(124,58,237,0.18) 60%, transparent 100%)",
+              mixBlendMode: "screen",
+            }}
+          />
           {/* Source badge */}
-          <span className="label-caps absolute left-3 top-3 max-w-[calc(100%-1.5rem)] truncate bg-primary px-2 py-1 text-white shadow-[0_2px_8px_-2px_rgba(124,58,237,0.5)]">
+          <span className="label-caps absolute left-3 top-3 max-w-[calc(100%-1.5rem)] truncate bg-primary px-2 py-1 text-white shadow-[0_2px_8px_-2px_rgba(124,58,237,0.5)] z-20">
             {article.sourceName}
           </span>
         </div>
