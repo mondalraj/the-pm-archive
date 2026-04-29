@@ -77,7 +77,7 @@ export function LatestArticles() {
         {/* Row 2+: three cards per row */}
         {bottomRow.length > 0 && (
           <Stagger className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6">
-            {bottomRow.map((article) => (
+            {bottomRow.map((article: import("@/types/article").ArticleSummary) => (
               <StaggerItem key={article.slug} className="flex">
                 <StandardCard article={article} className="w-full" />
               </StaggerItem>

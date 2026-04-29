@@ -7,7 +7,7 @@ type ApiResponse = { articles: ArticleSummary[]; hasMore: boolean };
 export function useInfiniteTopics({ tag, query, pageSize = 10 }: { tag: string | null, query: string, pageSize?: number }) {
   return useInfiniteQuery<ApiResponse, Error>({
     queryKey: ['topics', { tag, query }],
-    queryFn: async ({ pageParam = 0 }) => {
+    queryFn: async ({ pageParam }) => {
       const params = new URLSearchParams({
         offset: String(pageParam),
         limit: String(pageSize),
@@ -18,10 +18,10 @@ export function useInfiniteTopics({ tag, query, pageSize = 10 }: { tag: string |
       if (!res.ok) throw new Error('Failed to fetch articles');
       return res.json();
     },
+    initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
       const totalLoaded = allPages.flatMap((p) => p.articles).length;
       return lastPage.hasMore ? totalLoaded : undefined;
     },
-    keepPreviousData: true,
   });
 }
